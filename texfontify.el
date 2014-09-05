@@ -64,14 +64,25 @@ FILE is the name of the file being rendered, in case it is needed."
 (defun texfontify-buffer (&optional srcdir file)
   "Create a new buffer, named for the current buffer."
   (interactive)
-  (let ((hfy-page-header 'tfy-default-header)
+  (let (html-parse-tree
+        (hfy-page-header 'tfy-default-header)
         (hfy-page-footer 'tfy-default-footer)
-        (hfy-begin-span-handler 'tfy-begin-span)
-        (hfy-end-span-handler 'tfy-end-span))
-
+        ;; (hfy-begin-span-handler 'tfy-begin-span)
+        ;; (hfy-end-span-handler 'tfy-end-span)
+        )
 
     (call-interactively 'htmlfontify-buffer)
-    (tfy-strip-pre-tags)))
+    (tfy-strip-pre-tags)
+    (goto-char (point-min))
+
+
+    (setq html-parse-tree (libxml-parse-html-region (point-min) (point-max)))
+
+    (with-current-buffer "joejoe"
+      (erase-buffer)
+      (insert (format "%s" html-parse-tree)))
+
+    ))
 
 (provide 'texfontify)
 
